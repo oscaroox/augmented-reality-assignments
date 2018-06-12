@@ -27,64 +27,13 @@ namespace ImageUtilities
       return im_bitmap;
     }
 
-    public static Color[,] FromRGB2YUVAndBack(Color[,] im)
-    {
-        var bit = Colorm2bitmap(im);
-
-        for (int x = 0; x < im.GetLength(0); x++)
-        {
-            for (int y = 0; y < im.GetLength(1); y++)
-            {
-                var px = bit.GetPixel(x,y);
-
-                var rgb = new RGB(px.R, px.G, px.B);
-
-                var yuv = rgb.ToYUV();
-
-                // convert back to rgb since we cant display yuv
-                rgb = yuv.ToRGB();
-
-                bit.SetPixel(x, y, Color.FromArgb(px.A, rgb.r, rgb.g, rgb.b));
-            }
-        }
-
-        return Bitmap2colorm(bit);
-    }
-    
-    public static Color[,] FromRGB2YUVWithGreyScale(Color[,] im)
-    {
-            var bit = Colorm2bitmap(im);
-
-            for (int x = 0; x < im.GetLength(0); x++)
-            {
-                for (int y = 0; y < im.GetLength(1); y++)
-                {
-                    var px = bit.GetPixel(x, y);
-
-                    var rgb = new RGB(px.R, px.G, px.B);
-
-                    var yuv = rgb.ToYUV();
-                    yuv.ToGreyScale();
-
-                    rgb = yuv.ToRGB();
-
-                    rgb.ToGreyScale();
-
-                    bit.SetPixel(x, y, Color.FromArgb(px.A, rgb.r, rgb.g, rgb.b));
-                }
-            }
-
-            return Bitmap2colorm(bit);
-        }
-
- 
-
     /// <summary>
     /// Converts a bitmap into a matrix of colors
     /// </summary>
     private static Color[,] Bitmap2colorm(Bitmap im_bitmap)
     {
       Color[,] im = new Color[im_bitmap.Width, im_bitmap.Height];
+
       for (int i = 0; i < im_bitmap.Width; i++)
       {
         for (int j = 0; j < im_bitmap.Height; j++)
@@ -185,5 +134,7 @@ namespace ImageUtilities
       imageWindow.Controls.Add(outputPicture);
       imageWindow.ShowDialog();
     }
-  }
+
+    }
+ 
 }

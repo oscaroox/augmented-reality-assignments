@@ -14,18 +14,16 @@ namespace Template
     static void Main(string[] args)
     {
       //string path = args[0]; // right click template -> properties -> Debug -> command line arguments -> "../../../images/tulips.png"
-      string path = @"../../../images/forest.jpg";
+      string path = @"../../../images/baboon.png";
       Color[,] im = ImageViewer.LoadImage(path);
-        
-      // First display rgb to yuv conversion
-      var imgFromRGBToYUVAndBack = ImageViewer.FromRGB2YUVAndBack(im);
-      var imgWithGreyScale = ImageViewer.FromRGB2YUVWithGreyScale(im);
 
-      ImageViewer.DrawImagePair(im, imgFromRGBToYUVAndBack);
+      var mv = Vector.FromColor(im);
 
-      // Then displayblack and white filter with rgb and yuv
-      ImageViewer.DrawImagePair(im, imgWithGreyScale);
-
+      var km = new KMeans(mv, 90, 5);
+      var output = km.Start();
+     //  var output = ImageViewer.Kmeans(8, mv, 1);
+      ImageViewer.DrawImage(output);
+      ImageViewer.DrawImagePair(im, output);
     }
   }
 }
