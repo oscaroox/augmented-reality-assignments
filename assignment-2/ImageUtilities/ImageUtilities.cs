@@ -27,15 +27,53 @@ namespace ImageUtilities
       return im_bitmap;
     }
 
-
-     public static Color[,] bilinearInterpolation(Color[,] im, double scaleFactor)
+    public static Color[,] NearestNeighbourInterpolation(Color[,] im, double scaleFactor)
     {
             var sourceWidth = im.GetLength(0);
-            var sourceheight = im.GetLength(1);
+            var sourceHeight = im.GetLength(1);
+
+            var sr = (int)(sourceWidth * scaleFactor);
+            var sc = (int)(sourceHeight * scaleFactor);
+
+            var bitmap = new Bitmap(sr, sc);
+
+            for(var x = 0; x < sr; x++)
+            {
+                for(var y = 0; y < sc; y++)
+                {
+                    var rf = x / scaleFactor;
+                    var cf = y / scaleFactor;
+
+                    var r = (int)Math.Floor(rf);
+                    var c = (int)Math.Floor(cf);
+
+                    if (r >= sourceWidth) r = sourceWidth - 1;
+                    if (c >= sourceHeight) c = sourceHeight - 1;
+
+                    var co = im[r, c];
+
+                    bitmap.SetPixel(x, y, Color.FromArgb(
+                        Convert.ToInt32(co.A),
+                        Convert.ToInt32(co.R),
+                        Convert.ToInt32(co.G),
+                        Convert.ToInt32(co.B)
+                       ));
+                    
+                }
+            }
+
+            return Bitmap2colorm(bitmap);
+    }
+
+
+     public static Color[,] BilinearInterpolation(Color[,] im, double scaleFactor)
+    {
+            var sourceWidth = im.GetLength(0);
+            var sourceHeight = im.GetLength(1);
 
 
             var sr = (int)(sourceWidth * scaleFactor);
-            var sc = (int)(sourceheight * scaleFactor);
+            var sc = (int)(sourceHeight * scaleFactor);
                
             Bitmap bitmap = new Bitmap(sr, sc);
 
@@ -59,14 +97,14 @@ namespace ImageUtilities
                     var c1 = c + 1;
 
                     if (r >= sourceWidth) r = sourceWidth - 1;
-                    if (c >= sourceheight) c = sourceheight - 1;
+                    if (c >= sourceHeight) c = sourceHeight - 1;
 
                     if (r1 >= sourceWidth)
                     {
                         r1 = r;
                     }
 
-                    if (c1 >= sourceheight)
+                    if (c1 >= sourceHeight)
                     {
                         c1 = c;
                     }

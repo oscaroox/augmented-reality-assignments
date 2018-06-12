@@ -15,12 +15,22 @@ namespace Template
     {
       //string path = args[0]; // right click template -> properties -> Debug -> command line arguments -> "../../../images/tulips.png"
       string path = @"../../../images/boy.bmp";
-      Color[,] im = ImageViewer.LoadImage(path);
+      string forest = @"../../../images/forest.jpg";
 
-      var resize = ImageViewer.bilinearInterpolation(im, 1.2);
+      Color[,] im1 = ImageViewer.LoadImage(path);
+      Color[,] im2 = ImageViewer.LoadImage(forest);
 
-      ImageViewer.DrawImage(resize);
-      ImageViewer.DrawImagePair(im, resize);
+      var nResize = ImageViewer.NearestNeighbourInterpolation(im1, 1.5);
+      var bResize = ImageViewer.BilinearInterpolation(im2, 1.5);
+
+      // first draw nearest neighbour interpolation
+      ImageViewer.DrawImage(nResize);
+      ImageViewer.DrawImagePair(im1, nResize);
+
+      // then draw nearest neighbour interpolation
+      ImageViewer.DrawImage(bResize);
+      ImageViewer.DrawImagePair(im2, bResize);
+      
     }
   }
 }
