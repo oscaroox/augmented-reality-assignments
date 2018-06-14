@@ -146,14 +146,12 @@ namespace ImageUtilities
                 for (var x = 0; x < vWidth; x++)
 
                 {
-                    for (var y =0; y < vHeight; y++)
+                    for (var y = 0; y < vHeight; y++)
                     {
                         iter(x, y);
                     }
                 }
             }
         }
-
-
     }
 }
