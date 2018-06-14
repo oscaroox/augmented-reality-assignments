@@ -23,15 +23,11 @@ namespace ImageUtilities
             B = _b;
         }
 
-        public Vector Sum(Vector other)
+        public void Sum(Vector other)
         {
-            return new Vector(
-                x,
-                y,
-                R + other.R,
-                G + other.G,
-                B + other.B
-            );
+            R = R + other.R;
+            G = G + other.G;
+            B = B + other.B;
         }
 
         public double Length()
@@ -39,9 +35,16 @@ namespace ImageUtilities
             return Math.Sqrt((R * 2) + (G * 2) + (B * 2));
         }
 
-        public Vector Product(int sc)
+        public void Product(int sc)
         {
-            return new Vector(x, y, R * sc, G * sc, B * sc);
+            R = R / sc;
+            G = G / sc;
+            B = B / sc;
+        }
+
+        public Color FromRGB()
+        {
+            return Color.FromArgb((int)R, (int)G, (int)B);
         }
 
         public double Distance(Vector other)
@@ -62,6 +65,7 @@ namespace ImageUtilities
 
             return (R == vec.R) && (G == vec.G) && (B == vec.B);
         }
+
 
         public static Vector[,] FromColor(Color[,] im)
         {

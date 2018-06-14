@@ -20,8 +20,7 @@ namespace ImageUtilities
         private int vHeight = 0;
         private int maxIterations = 0;
 
-        private List<Vector> centroids;
-        private List<List<Vector>> clusters;
+        private List<Cluster> clusters;
 
         public KMeans(Vector[,] _vectors, int _numClusters, int _maxIterations)
         {
@@ -29,8 +28,7 @@ namespace ImageUtilities
             numClusters = _numClusters;
             maxIterations = _maxIterations;
 
-            centroids = new List<Vector>();
-            clusters = new List<List<Vector>>();
+            clusters = new List<Cluster>();
 
             vWidth = vectors.GetLength(0);
             vHeight = vectors.GetLength(1);
@@ -45,78 +43,61 @@ namespace ImageUtilities
 
             iterate((x,y) =>
             {
-                var curr = vectors[x, y];
+                var currentVector = vectors[x, y];
 
-                var calcDistance = Double.PositiveInfinity;
-                Vector closestCentroid = centroids[0];
+                var lastNearestDistance = Double.PositiveInfinity;
 
-                // loop through each centroid and check 
-                // if this vector is closest to a centroid
-                foreach (var centroid in centroids)
+                Cluster nearestCluster = clusters.First();
+
+                foreach (var cluster in clusters)
                 {
-                    var distance = curr.Distance(centroid);
-
-                    if ((distance * 2) < calcDistance)
+                    if(cluster.IsVectorNearCentroid(currentVector, lastNearestDistance))
                     {
-                        calcDistance = (distance * 2);
-                        closestCentroid = centroid;
+                        lastNearestDistance = (lastNearestDistance * 2);
+                        nearestCluster = cluster; 
                     }
-             
                 }
+                
+                // add vector to nearest cluster
+                nearestCluster.Add(currentVector);
 
-                // get the cluster closes to the centroid
-                List<Vector> cluster = clusters.Select(v => v)
-                    .First(c => c.Any(v => v == closestCentroid));
+                var count = nearestCluster.Count();
 
-                cluster.Add(curr);
-                int count = cluster.Count();
-                Vector currentCentroid = cluster[0];
+                // create a new vector to replace the old centroid position
                 var newCentroid = new Vector(x, y, 0, 0, 0);
-
-                foreach(var vector in cluster)
+                 
+                foreach(var vector in nearestCluster.vectors)
                 {
-                    newCentroid = newCentroid.Sum(vector);
+                    newCentroid.Sum(vector);
                 }
-
-                newCentroid = new Vector(x, y, newCentroid.R / count, newCentroid.G / count, newCentroid.B / count);
-
-                cluster.RemoveAt(0);
-                cluster.Insert(0, newCentroid);
-
-                for (int i = 0; i < centroids.Count(); i++)
-                {
-                    if (centroids[i] == currentCentroid)
-                    {
-                        centroids[i] = newCentroid;
-                        break;
-                    }
-                }
+                
+                // calculate new position of the centroid
+                newCentroid.Product(count);
+                
+                
+                nearestCluster.ReplaceCentroid(newCentroid);
 
             });
 
-            foreach (List<Vector> cluster in clusters)
-            {
-                Vector centroid = cluster[0];
-                for (int i = 1; i < cluster.Count(); i++)
-                {
-                    cluster[i].R = centroid.R;
-                    cluster[i].G = centroid.G;
-                    cluster[i].B = centroid.B;
-                }
-            }
-
             Color[,] output = new Color[vWidth, vHeight];
-            foreach (List<Vector> cluster in clusters)
+
+            foreach (Cluster cluster in clusters)
             {
-                for (int i = 0; i < cluster.Count(); i++)
+                var centroid = cluster.centroid;
+                var vectors = cluster.vectors;
+
+                foreach (Vector vector in vectors)
                 {
-                    Vector vector = cluster[i];
-                    output[vector.x, vector.y] = Color.FromArgb((int)vector.R, (int)vector.G, (int)vector.B);
+                    vector.R = centroid.R;
+                    vector.G = centroid.G;
+                    vector.B = centroid.B;
+
+                    output[vector.x, vector.y] = vector.FromRGB();
                 }
+
             }
 
             return output;
-
         }
 
         private void generateCentroids()
@@ -124,18 +105,10 @@ namespace ImageUtilities
             for(var i = 0; i < numClusters; i++)
             {
                 // get a random starting point for the centroid
-                var centroid = vectors[rand.Next(0, vWidth), rand.Next(0, vHeight)];
+                // and add to new cluster
+                var cluster = new Cluster(vectors[rand.Next(0, vWidth), rand.Next(0, vHeight)]);
 
-                var cluster = new List<Vector>();
-
-                // add the centroid to the cluster
-                cluster.Add(centroid);
-
-                // keep track of the cluster
                 clusters.Add(cluster);
-
-                // finally keep track of the centroid
-                centroids.Add(centroid);
             }
         }
 

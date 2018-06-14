@@ -19,9 +19,9 @@ namespace Template
 
       var mv = Vector.FromColor(im);
 
-      var km = new KMeans(mv, 90, 5);
+      var km = new KMeans(mv, 400, 3);
       var output = km.Start();
-     //  var output = ImageViewer.Kmeans(8, mv, 1);
+
       ImageViewer.DrawImage(output);
       ImageViewer.DrawImagePair(im, output);
     }

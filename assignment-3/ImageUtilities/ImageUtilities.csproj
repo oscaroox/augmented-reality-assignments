@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cluster.cs" />
     <Compile Include="ImageUtilities.cs" />
     <Compile Include="KMeans.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
